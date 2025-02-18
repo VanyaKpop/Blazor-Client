@@ -1,0 +1,36 @@
+@page "/login"
+@layout EmptyLayout
+@inject ApiService service
+@inject NavigationManager manager
+
+<PageTitle>Login</PageTitle>
+
+<div class="parent">
+    <div class="auth-content">
+        <p class="bord" />
+        <div class="form-content">
+            <form method='post'>
+                <p>
+                    <input class="form-input" required placeholder="Логин" @bind-value="user.name" />
+                </p>
+                <p>
+                    <input class="form-input" required type='password' placeholder="Пароль"
+                        @bind-value="user.password" />
+                </p>
+                <input class="button-form" type='submit' value='Логин' @onclick="btn" />
+            </form>
+            <a href="/register">У меня нет аккаунта</a>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public UserRequest user = new();
+
+    private void btn()
+    {
+        service.Login(user.name, user.password);
+        manager.NavigateTo("/");
+    }
+}

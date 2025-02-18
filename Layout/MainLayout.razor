@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+<div>
+    <div class="topnav">
+        <a href="/">Главная</a>
+        <a href="/tests">Тесты</a>
+        <div class="dropdown">
+            <button class="dropdown-btn" @onclick="dropBtn">drop</button>
+            <div class="dropdown-content @show">
+                <a href="/">Мои тесты</a>
+                <a href="/">Главная</a>
+                <a href="/">Главная</a>
+            </div>
+        </div>
+    </div>
+
+
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+
+@code {
+    protected static string show = "";
+    protected void dropBtn()
+    {
+        if (show == "show") show = "";
+        else show = "show";
+    }
+}
