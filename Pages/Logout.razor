@@ -1,0 +1,14 @@
+@page "/logout"
+@inject ApiService service
+@inject AppStateService AppState
+@inject NavigationManager manager
+
+@code {
+    protected override void OnAfterRender(bool firstRender){
+        if (firstRender){
+            service.Logout();
+            AppState.LoggedIn = false;
+            manager.NavigateTo("/");
+        }
+    }
+}

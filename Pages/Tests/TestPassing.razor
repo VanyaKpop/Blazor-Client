@@ -1,0 +1,72 @@
+@page "/testPassing"
+@inject ApiService service
+@inject AppStateService appState
+@inject NavigationManager manager
+@implements IDisposable
+@using System.Text.Json
+
+
+<div class="parent">
+    @if (test is not null)
+    {
+        <div class="header">
+            <div class="header-content">
+                <p class="tests__info__body">
+                    Название теста: @test.Name
+                    Автор: @test.Author
+                </p>
+            </div>
+        </div>
+        <div class="main column">
+            <ModalComponent Class="@AppStateService.ShowModal" />
+            <div class="column align-items-center body box-sizing-border">
+                @foreach (var item in Questions)
+                {
+                    <div class="question box-sizing-border">
+                        <p>
+                            @item.Body
+                        </p>
+                        <p>
+                            <CustomTextInput Required=item.IsRequired @bind-ChildData=item.UserAnswer placeholder="Ответ" />
+                        </p>
+                    </div>
+                }
+            </div>
+            <button class="button" @onclick="Submit">Готово</button>
+        </div>
+    }
+</div>
+
+
+@code {
+    private Test? test { get; set; }
+
+    private string? ModalShow { get; set; } = null;
+    private string? ModalBody { get; set; } = null;
+    private List<Question?> Questions = new List<Question?>();
+    private Dictionary<string, string> Answers = new Dictionary<string, string>();
+
+    public void Dispose() => AppStateService.OnChange -= StateHasChanged;
+    protected override void OnInitialized()
+    {
+        AppStateService.OnChange += StateHasChanged;
+    }
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            test = await appState.LoadTestAsync();
+            Questions = JsonSerializer.Deserialize<List<Question?>>(test.DataJson);
+            StateHasChanged();
+            if (await service.IsTokenDoesntExist())
+                manager.NavigateTo("/login");
+        }
+    }
+
+    private void Submit()
+    {
+
+        AppStateService.ShouldRenderModal = true;
+        AppStateService.ModalBody = $"Правильных ответов ";
+    }
+}

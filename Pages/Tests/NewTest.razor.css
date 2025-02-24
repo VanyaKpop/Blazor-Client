@@ -1,0 +1,156 @@
+.parent {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    width: 100%;
+    align-items: center;
+}
+
+.radiogroup {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.column {
+    flex-direction: column;
+}
+
+.row {
+    flex-direction: row;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+.align-items-center {
+    align-items: right;
+}
+
+.align-items-right {
+    align-items: right;
+}
+
+.main-content {
+    display: none;
+}
+
+.input-name {
+    box-sizing: border-box;
+    padding-left: 15px;
+    font-family: inherit;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    transition: 0.2s linear;
+    border: 2px solid rgb(63, 56, 56);
+}
+
+.header-content {
+    border-radius: 20px;
+    margin: 15px;
+    padding: 15px;
+    display: block;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: flex;
+    max-width: 600px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    width: 100%;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    width: 100%;
+}
+
+.footer {
+    width: 100%;
+}
+
+.question {
+    padding: 15px;
+    margin: 15px;
+    border-radius: 20px;
+    display: block;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-text {
+    box-sizing: border-box;
+    font-family: inherit;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    transition: 0.2slinear;
+    border: 2px solid rgb(63, 56, 56);
+    width: 100%;
+    padding: revert;
+}
+
+.input-checkbox {
+    border: solid rgb(63, 56, 56);
+    width: 20px;
+    height: 20px;
+}
+
+.button {
+    background-color: rgb(63, 56, 56);
+    font-family: inherit;
+    color: white;
+    height: 50px;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    transition: 0.2s linear;
+    cursor: pointer;
+}
+
+.margin-16-top {
+    margin-top: 16px;
+}
+
+p {
+    font-size: small;
+    padding: inherit;
+}
+
+
+
+
+.padding-16 {
+    padding: 16px;
+}
+
+.padding-10 {
+    padding: 16px;
+}
+
+
+
+input:focus {
+    transform: translateX(-2px);
+    border-radius: 10px;
+}
+
+.padding-15 {
+    padding: 15px;
+}

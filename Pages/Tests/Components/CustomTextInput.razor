@@ -1,0 +1,91 @@
+<input type="text" @oninput="HandleOnChange" placeholder="@Placeholder" class="input padding-left-15 @border" />
+@code {
+
+    [Parameter]
+    public bool Required { get; set; } = false;
+    private string data;
+    private string border;
+
+    [Parameter]
+    public string ChildData { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ChildDataChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Required)
+        {
+            if (data == "" || data is null)
+            {
+                border = "border-red";
+            }
+        }
+        else
+        {
+            border = "border-black";
+        }
+    }
+
+    private async Task HandleOnChange(ChangeEventArgs args)
+    {
+        data = args.Value.ToString();
+        if (Required)
+        {
+            if (data == "" || data is null)
+            {
+                border = "border-red";
+            }
+            else
+            {
+                border = "border-black";
+            }
+        }
+        await ChildDataChanged.InvokeAsync(data);
+    }
+
+    protected override void OnParametersSet()
+    {
+        data = ChildData;
+
+        base.OnParametersSet();
+    }
+}
+
+<style>
+    .input {
+        box-sizing: border-box;
+        resize: none;
+        font-family: inherit;
+        background-color: rgb(255, 255, 255);
+        color: black;
+        height: 50px;
+        border: none;
+        padding: 15px;
+        width: 100%;
+        border-radius: 10px;
+        transition: 0.2s linear;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .border-black {
+        border: 2px solid rgb(63, 56, 56);
+    }
+
+    .border-red {
+        border: 2px solid rgb(143, 33, 33);
+    }
+
+    .padding-15 {
+        padding: 15px;
+    }
+
+    input:focus {
+        transform: translateX(-2px);
+        border-radius: 10px;
+    }
+</style>

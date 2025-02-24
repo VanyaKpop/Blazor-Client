@@ -1,0 +1,44 @@
+@page "/tests"
+@inject ApiService service
+@inject AppStateService appState
+@inject NavigationManager manager
+
+
+<div class="tests">
+    @if (tests.Count >= 1)
+    {
+        foreach (var item in tests)
+        {
+            <div class="tests__info" @onclick="@( () => TestPassing(item))">
+                <p class="tests__info__body">
+                    Тест @item.Name
+                </p>
+                <p class="tests__info__footer">
+                    Автор: @item.Author
+                </p>
+            </div>
+        
+        }
+    }
+
+</div>
+
+@code {
+    private List<Test?> tests = new List<Test?>();
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender){
+            if (await service.IsTokenDoesntExist())
+                manager.NavigateTo("/login");
+            else {
+                tests = await service.GetTestAsync();
+                StateHasChanged();
+            }
+        }
+    }
+    private void TestPassing(Test test){
+        appState.Test = test;
+        appState.SaveTestAsync(test);
+        manager.NavigateTo("/testPassing");
+    }
+}

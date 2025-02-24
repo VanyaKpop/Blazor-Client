@@ -1,36 +1,71 @@
 @page "/login"
 @layout EmptyLayout
 @inject ApiService service
+@inject AppStateService appState
 @inject NavigationManager manager
 
 <PageTitle>Login</PageTitle>
 
 <div class="parent">
     <div class="auth-content">
-        <p class="bord" />
         <div class="form-content">
-            <form method='post'>
+            <EditForm Model="@Model" OnValidSubmit="Submit" FormName="Login">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
                 <p>
-                    <input class="form-input" required placeholder="Логин" @bind-value="user.name" />
+                    <InputText class="form-input remove-border.modified.valid" placeholder="Логин"
+                        @bind-value="Model.Username" />
                 </p>
                 <p>
-                    <input class="form-input" required type='password' placeholder="Пароль"
-                        @bind-value="user.password" />
+                    <InputText class="form-input remove-border.modified.valid" type='password'
+                        placeholder="Пароль" @bind-value="Model.Password" />
                 </p>
-                <input class="button-form" type='submit' value='Логин' @onclick="btn" />
-            </form>
+                <button type="submit" class="button">Логин</button>
+            </EditForm>
             <a href="/register">У меня нет аккаунта</a>
         </div>
     </div>
 </div>
 
 @code {
+    [SupplyParameterFromForm]
+    private UserRequest? Model { get; set; }
 
-    public UserRequest user = new();
-
-    private void btn()
+    protected override void OnInitialized()
     {
-        service.Login(user.name, user.password);
-        manager.NavigateTo("/");
+        Model = new UserRequest();
+    }
+
+    private async void Submit()
+    {
+        if (await service.Login(Model.Username, Model.Password))
+        {
+            appState.LoggedIn = true;
+            manager.NavigateTo("/");
+        }
+
     }
 }
+
+@* 
+	css isolation doesn't work for blazor components or Tag Helpers. use <style> instead
+*@
+
+
+<style>
+
+    .form-input {
+        box-sizing: border-box;
+        padding-left: 15px;
+        font-family: inherit;
+        background-color: rgb(255, 255, 255);
+        color: black;
+        height: 50px;
+        outline: none;
+        border: none;
+        border-radius: 10px;
+        transition: 0.2s linear;
+        border: 2px solid rgb(63, 56, 56);
+        width: 100%;
+    }
+</style>

@@ -1,0 +1,75 @@
+@inject AppStateService appState
+@implements IDisposable
+
+<div class="modal @AppStateService.ShowModal row align-items-center box-sizing-border ">
+    <div class="modal-header">
+        <button class="button" @onclick="Close">X</button>
+    </div>
+    <div class="column align-items-start">
+        @AppStateService.ModalBody
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    public void Dispose() => AppStateService.OnChange -= StateHasChanged;
+    protected override void OnInitialized()
+    {
+        AppStateService.OnChange += StateHasChanged;
+    }
+    private void Close()
+    {
+        AppStateService.ShouldRenderModal = false;
+    }
+}
+
+<style>
+    .show-modal {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .none {
+        display: none;
+    }
+
+    .modal {
+        padding: 15px;
+        position: absolute;
+        max-width: 300px;
+        max-height: 200px;
+        height: 100%;
+        width: 100%;
+        border-radius: 20px;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        background-color: white;
+    }
+
+    .modal-body {
+        background-color: rgb(66, 210, 30);
+    }
+
+    .align-items-start {
+        align-items: start;
+    }
+
+    .column {
+        flex-direction: column;
+    }
+
+    .row {
+        flex-direction: row;
+    }
+
+    .modal-header {
+        display: flex;
+        margin-left: auto;
+    }
+
+    .align-items-center {
+        align-items: center;
+    }
+</style>

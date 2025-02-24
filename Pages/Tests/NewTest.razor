@@ -1,0 +1,110 @@
+@page "/createTest"
+@inject ApiService service
+@inject NavigationManager manager
+@using System.Text.Json;
+
+<div class="parent">
+    <div class="header">
+        <div class="header-content">
+            <input class="input-text padding-15" type="text" required placeholder="Название теста"
+                @bind-value="TestName" />
+        </div>
+    </div>
+    <div class="body">
+        <div class="column align-items-center">
+            @if (questions.Count >= 1)
+            {
+                foreach (var item in questions)
+                {
+                    <div class="question">
+                        <p>
+                            <TextAreaComponent @bind-ChildData="item.Body" Placeholder="Вопрос" />
+                        </p>
+                        <p>
+                            <div class="answers @ShowRadio">
+                                Отмеченный вариант будет ответом на вопрос (можно выбрать несколько)
+                                
+                                @if (item.AnswerVariants.Count() >= 1)
+                                {
+                                    foreach(var answer in item.AnswerVariants) {
+                                        
+                                        <div>
+                                            <input class="input-checkbox" type="checkbox" @bind-value=answer.IsTrueAnswer />
+                                            <input type="text" class="input-text" @bind-value="answer.Body" Placeholder="Вариант ответа" />
+                                        </div>
+
+                                    }
+                                }
+
+                                <button class="button-add-test padding-10 padding-left-15"
+                                    @onclick="@(() => item.AnswerVariants.Add(new Answer()))">Добавить вариант</button>
+                            </div>
+                        </p>
+                        <p>
+                            <input class="input-checkbox" type="checkbox" @bind-value=item.IsRequired />
+                            Обязательный вопрос
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="padding-16 row align-items-center margin-16-top">
+            <button class="button-add-test padding-10 padding-left-15" @onclick="Button">Добавить вопрос</button>
+            <button class="button padding-10 margin-16-top padding-left-15" @onclick="Submit">Готово</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string TestName = "";
+    private string ShowRadio = "";
+
+    private bool render = false;
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            if (await service.IsTokenDoesntExist())
+                manager.NavigateTo("/login");
+    }
+
+    private List<Question> questions = new List<Question>
+    {
+        new Question {Type = "text", IsRequired = false, Body = ""}
+    };
+
+    private void Button()
+    {
+        questions.Add(new Question { Type = "text", IsRequired = false, Body = ""});
+    }
+
+    private void Submit()
+    {
+        try
+        {
+            if (TestName != "" && questions.Count >= 3)
+            {
+                if (Valid())
+                {
+                    service.PostTest(TestName, JsonSerializer.Serialize(questions));
+                    manager.NavigateTo("/usertests");
+                }
+            }
+        }
+        catch
+        {
+
+        }
+    }
+
+    private bool Valid()
+    {
+        Question? question = questions.FirstOrDefault(t => t.Body == "" || t.AnswerVariants.FirstOrDefault(a => a.Body == "", null) is not null, null);
+
+        if (TestName.Length >= 50)
+            return false;
+
+        return question is null;
+    }
+}

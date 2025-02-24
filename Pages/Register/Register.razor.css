@@ -7,23 +7,11 @@
     align-items: center;
 }
 
-.parent>.auth-content {
+.parent> .auth-content {
     border-radius: 20px;
-    border: 3px solid rgb(0, 0, 0);
     display: block;
     background-color: rgb(255, 255, 255);
-    box-shadow: 3px 0px black, 0px 3px black;
-}
-
-.bord {
-    border-bottom: 3px solid black;
-    -moz-border-radius-topright: 17px;
-    -moz-border-radius-topleft: 17px;
-    border-top-left-radius: 17px;
-    border-top-right-radius: 17px;
-    width: 100% + 30px;
-    height: 40px;
-    background-color: rgb(83, 156, 97);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .form-content {
@@ -34,47 +22,46 @@
     padding-bottom: 30px;
 }
 
-.parent>.auth-content a {
+.parent> .auth-content a {
     margin: 5px;
     align-self: center;
     text-align: center;
     text-decoration: none;
     color: rgb(0, 0, 0);
-    font-weight: bold;
+    font-size: small;
 }
 
 
-input[class="form-input"] {
-    font-size: 16px;
-    font-family: 'Abel', sans-serif;
+.form-input {
+    box-sizing: border-box;
+    padding-left: 15px;
+    font-family: inherit;
     background-color: rgb(255, 255, 255);
     color: black;
     height: 50px;
-    width: 250px;
-    outline: none;
     border: none;
     border-radius: 10px;
     transition: 0.2s linear;
-    border: 3px solid black;
+    border: 2px solid rgb(63, 56, 56);;
 }
 
-input[class="button-form"] {
-    background-color: rgb(83, 156, 97);
-    font-size: 16px;
-    font-family: 'Abel', sans-serif;
-    color: black;
+.button-form {
+    box-sizing: border-box;
+    background-color: rgb(63, 56, 56);
+    font-family: inherit;
+    color: white;
     height: 50px;
     outline: none;
     border: none;
-    width: 250px;
+    width: 100%;
     border-radius: 10px;
     transition: 0.2s linear;
-    border: 3px solid black;
+    cursor: pointer;
 }
 
-input[class="button-form"]:hover,
-input[class="button-form"]:active {
-    background-color: rgb(91, 172, 107);
+.button-form:hover,
+.button-form:active {
+    background-color: rgb(99, 88, 88);
 }
 
 input:focus {

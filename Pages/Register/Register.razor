@@ -7,17 +7,21 @@
 
 <div class="parent">
     <div class="auth-content">
-        <p class="bord" />
         <div class="form-content">
-            <form method='post'>
-                <p>
-                    <input class="form-input" required placeholder="Логин" @bind-value="user.name" />
-                </p>
-                <p>
-                    <input class="form-input" required type='password' placeholder="Пароль"
-                        @bind-value="user.password" />
-                </p>
-                <input class="button-form" type='submit' value='Зарегистрироваться' @onclick="btn" />
+            <form>
+                <EditForm Model="@Model" OnValidSubmit="Submit" FormName="Login">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <p>
+                        <InputText class="form-input remove-border.modified.valid" required placeholder="Логин"
+                            @bind-value="Model.Username" />
+                    </p>
+                    <p>
+                        <InputText class="form-input remove-border.modified.valid" required type='password'
+                            placeholder="Пароль" @bind-value="Model.Password" />
+                    </p>
+                    <button type="submit" class="button-form">Зарегистрироваться</button>
+                </EditForm>
             </form>
             <a href="/login">У меня есть аккаунт</a>
         </div>
@@ -25,12 +29,37 @@
 </div>
 
 @code {
+    [SupplyParameterFromForm]
+    private UserRequest? Model { get; set; }
 
-    public UserRequest user = new();
-
-    private void btn()
+    protected override void OnInitialized()
     {
-        service.Register(user);
-        manager.NavigateTo("/login");
+        Model = new UserRequest();
+    }
+
+    private async void Submit()
+    {
+        StateHasChanged();
+        if (await service.Register(Model))
+            manager.NavigateTo("/login");
     }
 }
+
+<style>
+    .remove-border.modified.valid {
+        outline: none;
+    }
+
+    .form-input {
+        box-sizing: border-box;
+        padding-left: 15px;
+        font-family: inherit;
+        background-color: rgb(255, 255, 255);
+        color: black;
+        height: 50px;
+        border: none;
+        border-radius: 10px;
+        transition: 0.2s linear;
+        border: 2px solid rgb(63, 56, 56);
+    }
+</style>

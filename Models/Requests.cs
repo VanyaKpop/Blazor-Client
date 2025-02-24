@@ -1,13 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Blazor_Client.Models;
 
-public record LoginRequest(string token);
+public record TokenRequest(string token);
 
 public class UserRequest
 {
-    public string name { get; set; } = "";
-    public string password { get; set; } = "";
-}
 
+    [StringLength(16, ErrorMessage = "Identifier too long (16 character limit).")]
+    public string? Username { get; set; }
+
+    public string? Password { get; set; }
+}
 
 public class TestRequest
 {

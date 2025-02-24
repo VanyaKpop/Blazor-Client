@@ -1,0 +1,52 @@
+<textarea @oninput="HandleOnChange" placeholder="@Placeholder" class="input padding-left-15">@data</textarea>
+
+@code {
+
+    private string data;
+
+    [Parameter] public string ChildData { get; set; }
+
+    [Parameter] public string Placeholder { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ChildDataChanged { get; set; }
+
+    private async Task HandleOnChange(ChangeEventArgs args)
+    {
+        data = args.Value.ToString();
+
+        await ChildDataChanged.InvokeAsync(data);
+    }
+
+    protected override void OnParametersSet()
+    {
+        data = ChildData;
+
+        base.OnParametersSet();
+    }
+}
+
+<style>
+    .input {
+        box-sizing: border-box;
+        resize: none;
+        font-family: inherit;
+        background-color: rgb(255, 255, 255);
+        color: black;
+        height: 300px;
+        border: none;
+        width: 100%;
+        border-radius: 10px;
+        transition: 0.2s linear;
+        border: 2px solid rgb(63, 56, 56);
+    }
+
+    .padding-15 {
+        padding: 15px;
+    }
+
+    input:focus {
+        transform: translateX(-2px);
+        border-radius: 10px;
+    }
+</style>

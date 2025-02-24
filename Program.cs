@@ -14,6 +14,7 @@ builder.Services.AddBlazoredLocalStorage();
 
 
 builder.Services.AddTransient<ApiService>();
+builder.Services.AddTransient<AppStateService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 await builder.Build().RunAsync();

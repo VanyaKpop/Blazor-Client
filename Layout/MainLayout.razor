@@ -1,18 +1,29 @@
 ﻿@inherits LayoutComponentBase
+@inject ApiService service
+@inject AppStateService AppState
+@implements IDisposable
+@inject NavigationManager manager
+
 <div>
     <div class="topnav">
-        <a href="/">Главная</a>
-        <a href="/tests">Тесты</a>
-        <div class="dropdown">
-            <button class="dropdown-btn" @onclick="dropBtn">drop</button>
-            <div class="dropdown-content @show">
-                <a href="/">Мои тесты</a>
-                <a href="/">Главная</a>
-                <a href="/">Главная</a>
+        <div class="row grow align-items-center">
+            <a href="/">Главная</a>
+            <a href="/tests">Тесты</a>
+        </div>
+        <div class="row align-items-center">
+            <a class="@AppStateService.ShowRL" href="/login">Войти</a>
+            <a href="/usertests" class="@AppStateService.ShowProfile">Мои тесты</a>
+            <a href="/logout" class="@AppStateService.ShowProfile">Выйти из аккаунта</a>
+            <div class="none">
+                <button class="dropdown-btn " @onclick="dropBtn">Профиль</button>
+                <div class="dropdown-content @show">
+                    <a href="/usertests">Мои тесты</a>
+                    <a href="/logout ">Выйти из аккаунта</a>
+                </div>
             </div>
         </div>
-    </div>
 
+    </div>
 
     <main>
         <article class="content px-4">
@@ -24,6 +35,20 @@
 
 @code {
     protected static string show = "";
+    public void Dispose() => AppStateService.OnChange -= StateHasChanged;
+    protected override void OnInitialized()
+    {
+        AppStateService.OnChange += StateHasChanged;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            AppState.IsLogged();
+    }
+
+
+
     protected void dropBtn()
     {
         if (show == "show") show = "";
