@@ -19,15 +19,24 @@
         </div>
         <div class="main column">
             <ModalComponent Class="@AppStateService.ShowModal" />
+
             <div class="column align-items-center body box-sizing-border">
-                @foreach (var item in Questions)
+                @foreach (var item in test.Questions)
                 {
                     <div class="question box-sizing-border">
                         <p>
                             @item.Body
                         </p>
                         <p>
-                            <CustomTextInput Required=item.IsRequired @bind-ChildData=item.UserAnswer placeholder="Ответ" />
+                        <div>
+                            @foreach (var answer in item.Answers)
+                            {
+                                <input class="input-checkbox" type="checkbox" @bind-value=answer.UserAnswer />
+                                <p>
+                                    @answer.Body
+                                </p>
+                            }
+                        </div>
                         </p>
                     </div>
                 }
@@ -43,9 +52,6 @@
 
     private string? ModalShow { get; set; } = null;
     private string? ModalBody { get; set; } = null;
-    private List<Question?> Questions = new List<Question?>();
-    private Dictionary<string, string> Answers = new Dictionary<string, string>();
-
     public void Dispose() => AppStateService.OnChange -= StateHasChanged;
     protected override void OnInitialized()
     {
@@ -56,7 +62,6 @@
         if (firstRender)
         {
             test = await appState.LoadTestAsync();
-            Questions = JsonSerializer.Deserialize<List<Question?>>(test.DataJson);
             StateHasChanged();
             if (await service.IsTokenDoesntExist())
                 manager.NavigateTo("/login");
@@ -65,8 +70,9 @@
 
     private void Submit()
     {
-
+        var эчкере = test.Questions.SelectMany(q => q.Answers).Select(a => a).Where(a => a.UserAnswer == true && a.IsTrueAnswer
+        == true).Count();
         AppStateService.ShouldRenderModal = true;
-        AppStateService.ModalBody = $"Правильных ответов ";
+        AppStateService.ModalBody = $"Правильных ответов {эчкере}";
     }
 }

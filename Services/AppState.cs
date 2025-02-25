@@ -50,7 +50,7 @@ public class AppStateService
     {
         set
         {
-            if (value is false)
+            if (value == false)
                 ShowRL = "none";
             else ShowRL = "show";
 
@@ -62,7 +62,7 @@ public class AppStateService
     {
         set
         {
-            if (value is false)
+            if (value == false)
                 ShowProfile = "none";
             else ShowProfile = "show";
             NotifyStateChanged();
@@ -77,7 +77,7 @@ public class AppStateService
         set
         {
             _LoggedIn = value;
-            if (value is false)
+            if (value == false)
             {
                 _ShowProfile = false;
                 _ShowRL = true;

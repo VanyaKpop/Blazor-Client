@@ -21,12 +21,11 @@
                             <TextAreaComponent @bind-ChildData="item.Body" Placeholder="Вопрос" />
                         </p>
                         <p>
-                            <div class="answers @ShowRadio">
-                                Отмеченный вариант будет ответом на вопрос (можно выбрать несколько)
+                            <div class="answers">
                                 
-                                @if (item.AnswerVariants.Count() >= 1)
+                                @if (item.Answers.Count() >= 1)
                                 {
-                                    foreach(var answer in item.AnswerVariants) {
+                                    foreach(var answer in item.Answers) {
                                         
                                         <div>
                                             <input class="input-checkbox" type="checkbox" @bind-value=answer.IsTrueAnswer />
@@ -37,7 +36,7 @@
                                 }
 
                                 <button class="button-add-test padding-10 padding-left-15"
-                                    @onclick="@(() => item.AnswerVariants.Add(new Answer()))">Добавить вариант</button>
+                                    @onclick="@(() => item.Answers.Add(new Answer()))">Добавить вариант</button>
                             </div>
                         </p>
                         <p>
@@ -87,20 +86,20 @@
             {
                 if (Valid())
                 {
-                    service.PostTest(TestName, JsonSerializer.Serialize(questions));
+                    service.PostTest(TestName, questions);
                     manager.NavigateTo("/usertests");
                 }
             }
         }
         catch
         {
-
+            
         }
     }
 
     private bool Valid()
     {
-        Question? question = questions.FirstOrDefault(t => t.Body == "" || t.AnswerVariants.FirstOrDefault(a => a.Body == "", null) is not null, null);
+        Question? question = questions.FirstOrDefault(t => t.Body == "" || t.Answers.FirstOrDefault(a => a.Body == "", null) is not null, null);
 
         if (TestName.Length >= 50)
             return false;

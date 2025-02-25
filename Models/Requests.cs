@@ -17,5 +17,6 @@ public class TestRequest
 {
     public required string Name { get; set; }
     public required string Author { get; set; }
-    public required string DataJson { get; set; }
+    public List<Question> Questions { get; set; } = new();
+    public List<Answer> Answers { get; set; } = new();
 }

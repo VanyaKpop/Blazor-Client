@@ -64,13 +64,15 @@ public class ApiService
 
         var request = new HttpRequestMessage(HttpMethod.Post, uri);
 
-        try {
+        try
+        {
             request.Content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
 
             using var response = await client.SendAsync(request);
             return true;
         }
-        catch {
+        catch
+        {
             return false;
         }
         return false;
@@ -140,12 +142,14 @@ public class ApiService
 
             using var response = await httpClient.SendAsync(request);
 
-            try {
+            try
+            {
                 var Tests = await response.Content.ReadFromJsonAsync<List<Test?>>();
 
                 return Tests;
             }
-            catch {
+            catch
+            {
                 return new List<Test?>();
             }
         }
@@ -170,18 +174,20 @@ public class ApiService
 
             using var response = await httpClient.SendAsync(request);
 
-            try {
+            try
+            {
                 var Tests = await response.Content.ReadFromJsonAsync<List<Test?>>();
 
                 return Tests;
             }
-            catch {
+            catch
+            {
                 return new List<Test?>();
             }
         }
         else return new List<Test?>();
     }
-    public async void PostTest(string testName, string dataJson)
+    public async void PostTest(string testName, List<Question> questions)
     {
         HttpClient httpClient = new();
         var client = _httpClientFactory.CreateClient();
@@ -193,7 +199,7 @@ public class ApiService
 
             var uri = new Uri($"{_url}/api/posttest/");
 
-            TestRequest test = new TestRequest { Name = testName, Author = user.Username, DataJson = dataJson };
+            TestRequest test = new TestRequest { Name = testName, Author = user.Username, Questions= questions};
 
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
 
@@ -205,7 +211,8 @@ public class ApiService
         }
     }
 
-    public async void Logout(){
+    public async void Logout()
+    {
         if (await _localStorageService.ContainKeyAsync("Token") & await _localStorageService.ContainKeyAsync("User"))
         {
             await _localStorageService.RemoveItemAsync("User");

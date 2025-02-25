@@ -6,8 +6,5 @@ public class Question
     public required bool IsRequired { get; set; }
     public required string Body { get; set; }
     public string? UserAnswer { get; set; } = null;
-    public List<Answer> AnswerVariants { get; set; } = new List<Answer>{
-        new Answer()
-    };
-    
+    public List<Answer> Answers { get; set; } = new();
 }
