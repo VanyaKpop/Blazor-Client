@@ -8,9 +8,9 @@ public class UserRequest
 {
 
     [StringLength(16, ErrorMessage = "Identifier too long (16 character limit).")]
-    public string? Username { get; set; }
+    public required string Username { get; set; }
 
-    public string? Password { get; set; }
+    public required string Password { get; set; }
 }
 
 public class TestRequest

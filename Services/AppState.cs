@@ -116,6 +116,30 @@ public class AppStateService
         return _Test;
     }
 
+    public async void SaveCreatedTest(string testName, List<Question> questions)
+    {
+        if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User"))
+        {
+            TestRequest test = new TestRequest { Name = testName, Author = "self", Questions= questions};
+            await _localStorageService.SetItemAsync<TestRequest>("Cache", test);
+        }
+    }
+
+    public async void DeleteSavedCacheTest()
+    {
+        await _localStorageService.RemoveItemAsync("Cache");
+    }
+
+    public async Task<TestRequest?> LoadSavedCacheTestAsync()
+    {
+        if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User"))
+        {
+            return await _localStorageService.GetItemAsync<TestRequest>("Cache");
+        }
+
+        return null;
+    }
+
     public async void SaveTestAsync()
     {
         if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User") && _Test is not null)

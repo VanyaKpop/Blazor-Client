@@ -125,6 +125,14 @@ code {
     box-sizing: border-box;
 }
 
+p {
+    word-wrap: break-word;
+}
+
+.box-shadow {
+    box-shadow: rgba(66, 69, 75, 0.2) 0px 8px 24px;
+}
+
 @media screen and (max-width: 331px) {
     body {
       font-size: min(3vw, 10px);

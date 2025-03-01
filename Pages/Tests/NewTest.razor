@@ -1,5 +1,6 @@
 @page "/createTest"
 @inject ApiService service
+@inject AppStateService appState
 @inject NavigationManager manager
 @using System.Text.Json;
 
@@ -16,30 +17,43 @@
             {
                 foreach (var item in questions)
                 {
-                    <div class="question">
-                        <p>
+                    <div class="question box-shadow">
+                        <p class="flex column">
+                            <button class="button margin-bottom-10" @onclick="@(() => 
+                            {
+                                questions.Remove(item);
+                            })">Удалить вопрос</button>
                             <TextAreaComponent @bind-ChildData="item.Body" Placeholder="Вопрос" />
                         </p>
                         <p>
                             <div class="answers">
-                                
+
                                 @if (item.Answers.Count() >= 1)
                                 {
-                                    foreach(var answer in item.Answers) {
-                                        
-                                        <div>
+                                    foreach (var answer in item.Answers)
+                                    {
+
+                                        <div class="answer-variants">
                                             <input class="input-checkbox" type="checkbox" @bind-value=answer.IsTrueAnswer />
                                             <input type="text" class="input-text" @bind-value="answer.Body" Placeholder="Вариант ответа" />
+                                            <button class="button-delete" @onclick="@(() => 
+                                            {
+                                                item.Answers.Remove(answer);
+                                            })">X</button>
                                         </div>
 
                                     }
                                 }
 
-                                <button class="button-add-test padding-10 padding-left-15"
-                                    @onclick="@(() => item.Answers.Add(new Answer()))">Добавить вариант</button>
+                                <button class="button-add-test padding-10 padding-left-15" @onclick="@(() => 
+                                    {
+                                            if (item.Answers.Count() <= 5)
+                                                    item.Answers.Add(new Answer());
+                                    }
+                                )">Добавить вариант</button>
                             </div>
                         </p>
-                        <p>
+                        <p class="question-footer">
                             <input class="input-checkbox" type="checkbox" @bind-value=item.IsRequired />
                             Обязательный вопрос
                         </p>
@@ -49,7 +63,8 @@
         </div>
 
         <div class="padding-16 row align-items-center margin-16-top">
-            <button class="button-add-test padding-10 padding-left-15" @onclick="Button">Добавить вопрос</button>
+            <button class="button-add-test padding-10 padding-left-15 @HideButton" @onclick="Button">Добавить
+                вопрос</button>
             <button class="button padding-10 margin-16-top padding-left-15" @onclick="Submit">Готово</button>
         </div>
     </div>
@@ -57,51 +72,67 @@
 
 @code {
     private string TestName = "";
-    private string ShowRadio = "";
-
+    private string HideButton = "";
     private bool render = false;
+    protected async override Task OnInitializedAsync(){
+        var cacheTest = await appState.LoadSavedCacheTestAsync();
 
+        if (cacheTest is not null)
+        {
+            TestName = cacheTest.Name;
+            questions = cacheTest.Questions;
+        }
+    }
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
             if (await service.IsTokenDoesntExist())
                 manager.NavigateTo("/login");
+        }
     }
 
     private List<Question> questions = new List<Question>
     {
-        new Question {Type = "text", IsRequired = false, Body = ""}
+    new Question {IsRequired = false, Body = ""}
     };
 
     private void Button()
     {
-        questions.Add(new Question { Type = "text", IsRequired = false, Body = ""});
+        if (questions.Count() < 32)
+        {
+            questions.Add(new Question {IsRequired = false, Body = "" });
+            appState.SaveCreatedTest(TestName, questions);
+        }
+        else
+        {
+            HideButton = "none";
+        }
     }
 
     private void Submit()
     {
-        try
+        if (TestName != "" && questions.Count >= 3)
         {
-            if (TestName != "" && questions.Count >= 3)
+            if (Valid())
             {
-                if (Valid())
-                {
-                    service.PostTest(TestName, questions);
-                    manager.NavigateTo("/usertests");
-                }
+                appState.DeleteSavedCacheTest();
+                service.PostTest(TestName, questions);
+                manager.NavigateTo("/usertests");
             }
-        }
-        catch
-        {
-            
         }
     }
 
     private bool Valid()
     {
-        Question? question = questions.FirstOrDefault(t => t.Body == "" || t.Answers.FirstOrDefault(a => a.Body == "", null) is not null, null);
+        Question? question = questions.FirstOrDefault(t => t.Body == "" || t.Answers.FirstOrDefault(a => a.Body == "", null) is
+        not null, null);
 
-        if (TestName.Length >= 50)
+
+        if (questions.Count() > 32)
+            return false;
+
+        if (TestName.Length > 50)
             return false;
 
         return question is null;

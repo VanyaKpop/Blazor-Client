@@ -9,7 +9,7 @@
     {
         foreach (var item in tests)
         {
-            <div class="tests__info" @onclick="@( () => TestPassing(item))">
+            <div class="tests__info box-shadow" @onclick="@( () => TestPassing(item))">
                 <p class="tests__info__body">
                     Тест @item.Name
                 </p>

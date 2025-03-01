@@ -7,14 +7,14 @@
 
 <div class="tests">
     <div class="header">
-        <a href="/createtest" class="button">Создать тест</a>
+        <a @onclick="CreateTest" class="button">Создать тест</a>
     </div>
     <div class="body">
         @if (tests.Count >= 1)
             {
                 foreach (var item in tests)
                 {
-                    <div class="tests__info" @onclick="@( () => TestPassing(item))">
+                    <div class="tests__info box-shadow" @onclick="@( () => TestPassing(item))">
                         <p class="tests__info__body">
                             Тест @item.Name
                         </p>
@@ -41,6 +41,13 @@
             }
         }
     }
+
+    private void CreateTest()
+    {
+        appState.DeleteSavedCacheTest();
+        manager.NavigateTo("/createtest");
+    }
+
     private void TestPassing(Test test){
         appState.Test = test;
         appState.SaveTestAsync(test);

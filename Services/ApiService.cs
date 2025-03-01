@@ -17,7 +17,7 @@ public interface IApiService
 
 public class ApiService
 {
-    private string _url = "http://localhost:5089";
+    private string bebe = "http://172.16.221.14:85";
     private NavigationManager _navigationManager;
     private ILocalStorageService _localStorageService;
     private IHttpClientFactory _httpClientFactory;
@@ -28,19 +28,26 @@ public class ApiService
         _httpClientFactory = httpClientFactory;
     }
 
-    private HttpClient httpClient = new();
-
     public async Task<bool> Login(string username, string password)
     {
-        HttpClient httpClient = new();
         var client = _httpClientFactory.CreateClient();
 
-        var uri = new Uri($"{_url}/auth/login/{username}/{password}");
+        var uri = new Uri($"{bebe}/auth/login/");
 
-        var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        var user = new UserRequest {Username = username, Password = password};
+
+        var request = new HttpRequestMessage(HttpMethod.Post, uri);
+
+        if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User"))
+        {
+            await _localStorageService.RemoveItemAsync("User");
+            await _localStorageService.RemoveItemAsync("Token");
+        }
 
         try
         {
+            request.Content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
+
             using var response = await client.SendAsync(request);
 
             TokenRequest? token = await response.Content.ReadFromJsonAsync<TokenRequest>();
@@ -57,10 +64,9 @@ public class ApiService
 
     public async Task<bool> Register(UserRequest user)
     {
-        HttpClient httpClient = new();
         var client = _httpClientFactory.CreateClient();
 
-        var uri = new Uri($"{_url}/auth/register");
+        var uri = new Uri($"{bebe}/auth/register");
 
         var request = new HttpRequestMessage(HttpMethod.Post, uri);
 
@@ -75,72 +81,23 @@ public class ApiService
         {
             return false;
         }
-        return false;
-    }
-
-    public async Task<List<Comment>> GetComments(long id)
-    {
-        HttpClient httpClient = new();
-        var client = _httpClientFactory.CreateClient();
-
-        if (await _localStorageService.ContainKeyAsync("Token") & await _localStorageService.ContainKeyAsync("User"))
-        {
-            var token = await _localStorageService.GetItemAsync<TokenRequest>("Token");
-
-            var uri = new Uri($"{_url}/api/users/");
-
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
-
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.token);
-
-            using var response = await httpClient.SendAsync(request);
-
-            List<Comment> comments = await response.Content.ReadFromJsonAsync<List<Comment>>();
-
-            return comments;
-        }
-        else return new List<Comment>();
-    }
-    public async Task<List<User>> GetUsers()
-    {
-        HttpClient httpClient = new();
-        var client = _httpClientFactory.CreateClient();
-
-        if (await _localStorageService.ContainKeyAsync("Token") & await _localStorageService.ContainKeyAsync("User"))
-        {
-            var token = await _localStorageService.GetItemAsync<TokenRequest>("Token");
-
-            var uri = new Uri($"{_url}/api/users/");
-
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
-
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.token);
-
-            using var response = await httpClient.SendAsync(request);
-
-            List<User> users = await response.Content.ReadFromJsonAsync<List<User>>();
-
-            return users;
-        }
-        else return new List<User>();
     }
 
     public async Task<List<Test?>> GetTestAsync()
     {
-        HttpClient httpClient = new();
         var client = _httpClientFactory.CreateClient();
 
-        if (await _localStorageService.ContainKeyAsync("Token") & await _localStorageService.ContainKeyAsync("User"))
+        if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User"))
         {
             var token = await _localStorageService.GetItemAsync<TokenRequest>("Token");
 
-            var uri = new Uri($"{_url}/api/gettests/");
+            var uri = new Uri($"{bebe}/api/gettests/");
 
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.token);
 
-            using var response = await httpClient.SendAsync(request);
+            using var response = await client.SendAsync(request);
 
             try
             {
@@ -158,21 +115,20 @@ public class ApiService
 
     public async Task<List<Test?>> GetUserTestsAsync()
     {
-        HttpClient httpClient = new();
         var client = _httpClientFactory.CreateClient();
 
-        if (await _localStorageService.ContainKeyAsync("Token") & await _localStorageService.ContainKeyAsync("User"))
+        if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User"))
         {
             var token = await _localStorageService.GetItemAsync<TokenRequest>("Token");
-            var user = await _localStorageService.GetItemAsync<UserRequest>("Token");
+            var user = await _localStorageService.GetItemAsync<UserRequest>("User");
 
-            var uri = new Uri($"{_url}/api/gettests/{user.Username}");
+            var uri = new Uri($"{bebe}/api/gettests/{user.Username}");
 
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.token);
 
-            using var response = await httpClient.SendAsync(request);
+            using var response = await client.SendAsync(request);
 
             try
             {
@@ -189,15 +145,14 @@ public class ApiService
     }
     public async void PostTest(string testName, List<Question> questions)
     {
-        HttpClient httpClient = new();
         var client = _httpClientFactory.CreateClient();
 
-        if (await _localStorageService.ContainKeyAsync("Token") & await _localStorageService.ContainKeyAsync("User"))
+        if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User"))
         {
             var token = await _localStorageService.GetItemAsync<TokenRequest>("Token");
             UserRequest? user = await _localStorageService.GetItemAsync<UserRequest>("User");
 
-            var uri = new Uri($"{_url}/api/posttest/");
+            var uri = new Uri($"{bebe}/api/posttest/");
 
             TestRequest test = new TestRequest { Name = testName, Author = user.Username, Questions= questions};
 
@@ -207,13 +162,13 @@ public class ApiService
 
             request.Content = new StringContent(JsonSerializer.Serialize(test), Encoding.UTF8, "application/json");
 
-            using var response = await httpClient.SendAsync(request);
+            using var response = await client.SendAsync(request);
         }
     }
 
     public async void Logout()
     {
-        if (await _localStorageService.ContainKeyAsync("Token") & await _localStorageService.ContainKeyAsync("User"))
+        if (await _localStorageService.ContainKeyAsync("Token") && await _localStorageService.ContainKeyAsync("User"))
         {
             await _localStorageService.RemoveItemAsync("User");
             await _localStorageService.RemoveItemAsync("Token");

@@ -1,7 +1,7 @@
 @inject AppStateService appState
 @implements IDisposable
 
-<div class="modal @AppStateService.ShowModal row align-items-center box-sizing-border ">
+<div class="modal @AppStateService.ShowModal align-items-center box-sizing-border ">
     <div class="modal-header">
         <button class="button" @onclick="Close">X</button>
     </div>
@@ -67,6 +67,7 @@
     .modal-header {
         display: flex;
         margin-left: auto;
+        margin-bottom: 15px;
     }
 
     .align-items-center {

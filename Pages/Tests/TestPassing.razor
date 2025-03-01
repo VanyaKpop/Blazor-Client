@@ -4,6 +4,7 @@
 @inject NavigationManager manager
 @implements IDisposable
 @using System.Text.Json
+@using System.ComponentModel.Design;
 
 
 <div class="parent">
@@ -23,20 +24,34 @@
             <div class="column align-items-center body box-sizing-border">
                 @foreach (var item in test.Questions)
                 {
-                    <div class="question box-sizing-border">
+                    <div class="question box-sizing-border box-shadow">
+                        @if (item.IsRequired) {
+                            <p>
+                                Обязательный вопрос!
+                            </p>
+                        }
                         <p>
                             @item.Body
                         </p>
-                        <p>
-                        <div>
-                            @foreach (var answer in item.Answers)
-                            {
-                                <input class="input-checkbox" type="checkbox" @bind-value=answer.UserAnswer />
-                                <p>
-                                    @answer.Body
-                                </p>
-                            }
-                        </div>
+                        <p class="no-margin">
+                            <div>
+                                @foreach (var answer in item.Answers)
+                                {
+                                    <div class="answer-variants border-2-radius-12">
+                                        <button class="answer-button @answer.Fill" @onclick="@(() => 
+                                            {
+                                                answer.UserAnswer = !answer.UserAnswer;
+                                                if (answer.UserAnswer == true)
+                                                    answer.Fill = "fill-black";
+                                                else answer.Fill = "";
+                                                    
+                                            }
+                                        )">
+                                            @answer.Body
+                                        </button>
+                                    </div>
+                                }
+                            </div>
                         </p>
                     </div>
                 }
@@ -49,7 +64,7 @@
 
 @code {
     private Test? test { get; set; }
-
+    private string Black = "";
     private string? ModalShow { get; set; } = null;
     private string? ModalBody { get; set; } = null;
     public void Dispose() => AppStateService.OnChange -= StateHasChanged;
@@ -70,9 +85,14 @@
 
     private void Submit()
     {
+        var bebe = test.Questions.FirstOrDefault(q => q.Answers.FirstOrDefault(a => q.IsRequired == true && a.UserAnswer == true, null) is not null);
+
+        if (bebe is null)
+            return;
+
         var эчкере = test.Questions.SelectMany(q => q.Answers).Select(a => a).Where(a => a.UserAnswer == true && a.IsTrueAnswer
         == true).Count();
         AppStateService.ShouldRenderModal = true;
-        AppStateService.ModalBody = $"Правильных ответов {эчкере}";
+        AppStateService.ModalBody = $"Правильных ответов: {эчкере}";
     }
 }
